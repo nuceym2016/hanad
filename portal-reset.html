@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Portal Credentials | Dhaxal Engine</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        .font-heading { font-family: 'Space Grotesk', sans-serif; }
+        .radial-bg { background: radial-gradient(circle at center, #115e59 0%, #042f2e 100%); min-height: 100vh; }
+    </style>
+</head>
+<body>
+    <div class="radial-bg d-flex align-items-center justify-content-center px-3">
+        <div class="card border-0 shadow-lg p-4 rounded-3 w-100" style="max-width: 440px;">
+            <div class="card-body">
+                <h2 class="font-heading fw-bold h4 text-center text-dark mb-1">Account Recovery</h2>
+                <p class="text-center text-muted small mb-4">Provide your registered institutional email profile below.</p>
+
+                <form action="portal-login.html" method="GET" onsubmit="alert('Recovery token dispatched via encrypted mail node.');">
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">Institutional Identity Email</label>
+                        <input type="email" class="form-control" placeholder="justice-dept@dhaxal.gov" required autocomplete="email">
+                    </div>
+                    <button type="submit" class="btn text-white w-100 py-2 fw-bold font-heading shadow-sm" style="background-color: #0f766e;">Dispatch Reset Authorization</button>
+                </form>
+                <div class="text-center mt-4"><a href="portal-login.html" class="text-muted small text-decoration-none">◀ Back to Portal Gateway</a></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

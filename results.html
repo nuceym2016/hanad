@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculation Matrix | Dhaxal Engine</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>.font-heading { font-family: 'Space Grotesk', sans-serif; }</style>
+</head>
+<body class="bg-light">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-white bg-white border-bottom sticky-top">
+        <div class="container">
+            <a class="navbar-brand font-heading fw-bold text-success" href="index.html">⚖️ DHAXAL<span>ENGINE</span></a>
+            <ul class="navbar-nav ms-auto"><li class="nav-item"><a class="nav-link text-muted" href="calculator.html">Run Another Calculation</a></li></ul>
+        </div>
+    </nav>
+
+    <!-- Content Container -->
+    <main class="container my-5" style="max-width: 900px;">
+        <div class="mb-4">
+            <h2 class="font-heading fw-bold display-6 mb-1">Estate Share Diagnostics Report</h2>
+            <p class="text-muted small">Calculated Evaluation Token Reference: <strong id="token-id">DX-2026-XXXX</strong></p>
+        </div>
+
+        <!-- Ledger Reco Card -->
+        <div class="card border-0 shadow-sm rounded-3 p-3 mb-4">
+            <div class="card-body">
+                <h3 class="font-heading h6 fw-bold mb-3 text-dark">Estate Reconciliation Log</h3>
+                <div class="row row-cols-1 g-2 small border-bottom pb-2 mb-2">
+                    <div class="d-flex justify-content-between"><span>Gross Asset Valuation:</span><span id="log-gross" class="fw-bold">$0.00</span></div>
+                    <div class="d-flex justify-content-between text-danger"><span>(-) Funeral & Burial Claims:</span><span id="log-funeral">$0.00</span></div>
+                    <div class="d-flex justify-content-between text-danger"><span>(-) Personal Debts & Liabilities:</span><span id="log-debts">$0.00</span></div>
+                    <div class="d-flex justify-content-between text-danger"><span>(-) Executed Will Testaments:</span><span id="log-wills">$0.00</span></div>
+                </div>
+                <div class="d-flex justify-content-between fw-bold text-success h5 pt-2">
+                    <span>Net Distributable Residue:</span><span id="log-net">$0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+            <div class="card-header bg-white py-3 border-0">
+                <h3 class="font-heading h5 mb-0 fw-bold" style="color: #0f766e;">Legal Apportionment Matrix</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-muted small">
+                        <tr>
+                            <th>Legal Heir Relation</th>
+                            <th>Category</th>
+                            <th>Fraction</th>
+                            <th>Net Share Allocation ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrix-body" class="small">
+                        <!-- Output dynamic table markup dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Internal Arithmetic Parser -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('token-id').innerText = 'DX-2026-' + Math.floor(1000 + Math.random() * 9000);
+            const params = new URLSearchParams(window.location.search);
+            
+            const gross = parseFloat(params.get('gross_assets')) || 500000;
+            const funeral = parseFloat(params.get('funeral_expenses')) || 0;
+            const debts = parseFloat(params.get('debts')) || 0;
+            const wills = parseFloat(params.get('wills')) || 0;
+            
+            const gender = params.get('deceased_gender') || 'male';
+            const countSpouses = parseInt(params.get('count_spouses')) || 0;
+            const countSons = parseInt(params.get('count_sons')) || 0;
+            const countDaughters = parseInt(params.get('count_daughters')) || 0;
+            const hasFather = parseInt(params.get('has_father')) || 0;
+            const hasMother = parseInt(params.get('has_mother')) || 0;
+
+            const initialNet = gross - funeral - debts;
+            const maxWill = initialNet / 3;
+            const trueWill = wills > maxWill ? maxWill : wills;
+            const netDistributable = initialNet - trueWill;
+
+            document.getElementById('log-gross').innerText = '$' + gross.toLocaleString();
+            document.getElementById('log-funeral').innerText = '-$' + funeral.toLocaleString();
+            document.getElementById('log-debts').innerText = '-$' + debts.toLocaleString();
+            document.getElementById('log-wills').innerText = '-$' + trueWill.toLocaleString();
+            document.getElementById('log-net').innerText = '$' + netDistributable.toLocaleString();
+
+            let rowsHtml = '';
+            let remainingPool = netDistributable;
+            const hasChildren = (countSons > 0 || countDaughters > 0);
+
+            if (countSpouses > 0) {
+                let f = gender === 'male' ? (hasChildren ? 0.125 : 0.25) : (hasChildren ? 0.25 : 0.5);
+                let total = netDistributable * f;
+                remainingPool -= total;
+                rowsHtml += `<tr><td><strong>${gender === 'male' ? 'Wife' : 'Husband'} (${countSpouses}x)</strong></td><td>Fixed Quranic Share</td><td>${gender === 'male' ? (hasChildren ? '1/8' : '1/4') : (hasChildren ? '1/4' : '1/2')}</td><td class="text-success fw-bold">$${(total/countSpouses).toLocaleString()} each</td></tr>`;
+            }
+            if (hasMother === 1) {
+                let f = hasChildren ? (1/6) : (1/3);
+                let total = netDistributable * f;
+                remainingPool -= total;
+                rowsHtml += `<tr><td><strong>Mother (Umm)</strong></td><td>Fixed Quranic Share</td><td>${hasChildren ? '1/6' : '1/3'}</td><td class="text-success fw-bold">$${total.toLocaleString()}</td></tr>`;
+            }
+            if (hasFather === 1) {
+                let f = 1/6;
+                let total = netDistributable * f;
+                remainingPool -= total;
+                rowsHtml += `<tr><td><strong>Father (Ab)</strong></td><td>Fixed Quranic Share</td><td>1/6</td><td class="text-success fw-bold">$${total.toLocaleString()}</td></tr>`;
+            }
+            if (countSons > 0 || countDaughters > 0) {
+                let totalShares = (countSons * 2) + countDaughters;
+                let baseShare = Math.max(0, remainingPool) / totalShares;
+                if (countSons > 0) {
+                    rowsHtml += `<tr><td><strong>Sons (${countSons}x)</strong></td><td>Residuary (Asabah)</td><td>2 parts</td><td class="text-success fw-bold">$${(baseShare * 2).toLocaleString()} each</td></tr>`;
+                }
+                if (countDaughters > 0) {
+                    rowsHtml += `<tr><td><strong>Daughters (${countDaughters}x)</strong></td><td>Residuary (Asabah)</td><td>1 part</td><td class="text-success fw-bold">$${baseShare.toLocaleString()} each</td></tr>`;
+                }
+            } else if (hasFather === 1 && remainingPool > 0) {
+                rowsHtml += `<tr><td><strong>Father (Asabah Residue)</strong></td><td>Residuary Balance</td><td>Remainder</td><td class="text-success fw-bold">$${remainingPool.toLocaleString()}</td></tr>`;
+            }
+
+            document.getElementById('matrix-body').innerHTML = rowsHtml;
+        });
+    </script>
+</body>
+</html>
